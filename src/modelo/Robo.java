@@ -9,10 +9,39 @@ public abstract class Robo implements Comunicavel{
     public int nivelBateria;
     public StatusRobo status;
     public ArrayList<Missao> missoesRealizadas;
-    
+    public Robo(int id, String nome, StatusRobo status){
+        this.id = id;
+        this.nome = nome;
+        this.status = status;
+        this.nivelBateria = 100;
+        this.missoesRealizadas = new ArrayList<Missao>(0);
+    }
+    //getters e setters
+    public int getId(){
+        return this.id;
+    }
+    public String getNome(){
+        return this.nome;
+    }
+    public StatusRobo getStatus(){
+        return this.status;
+    }
+    public int getNivelBateria(){
+        return this.nivelBateria;
+    }
     public void setNivelBateria(int bateria){
         this.nivelBateria = bateria;
     }
+    public void setStatus(StatusRobo status){
+        this.status = status;
+    }
+    public void setNome(String nome){
+        this.nome = nome;
+    }
+    public void setId(int id){
+        this.id = id;
+    }
+    //-------------------------------\\
     protected StatusRobo verificarDisponibilidade(){
         return this.status;
     }
