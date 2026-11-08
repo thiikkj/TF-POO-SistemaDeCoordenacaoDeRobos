@@ -1,9 +1,9 @@
 package modelo;
 //imports
 import java.util.ArrayList;
-
+import java.io.Serializable;
 import enums.StatusRobo;
-public abstract class Robo implements Comunicavel{
+public abstract class Robo implements Comunicavel, Serializable{
     protected int id;
     public String nome;
     public int nivelBateria;
