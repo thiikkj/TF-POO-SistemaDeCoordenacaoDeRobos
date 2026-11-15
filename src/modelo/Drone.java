@@ -28,6 +28,7 @@ public class Drone extends Robo {
         this.imagem = imagem;
         this.missoesRealizadas = new ArrayList<Missao>(0);
     }
+    @Override
     public boolean executarMissao(Missao missao){
         if(super.nivelBateria>=50){
             this.missoesRealizadas.add(missao);
