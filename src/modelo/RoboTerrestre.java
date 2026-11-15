@@ -25,16 +25,15 @@ public class RoboTerrestre extends Robo {
         this.cargaMax = cargaMax;
     }
     //-------------------------------\\
+
     public RoboTerrestre(int id, String nome, StatusRobo status, int velocidadeMax, TipoTerreno terreno, double cargaMax){
-        super.id = id;
-        super.nome = nome;
-        super.status = status;
-        super.nivelBateria = 100;
+        super(id, nome, status);
         this.velocidadeMax = velocidadeMax;
         this.terreno = terreno;
         this.cargaMax = cargaMax;
         super.missoesRealizadas = new ArrayList<Missao>(0);
     }
+
     @Override 
     public boolean executarMissao(Missao missao){
         if(super.nivelBateria>=50){

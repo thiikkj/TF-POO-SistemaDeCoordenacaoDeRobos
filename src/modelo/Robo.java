@@ -55,11 +55,7 @@ public abstract class Robo implements Comunicavel, Serializable{
     protected String exibirResumo(){
         return "Id: "+this.id+"\n"+"Nome: "+this.nome+"\n"+"Bateria: "+this.nivelBateria+"\n"+"Status: "+this.status+"\n"+"Quantidade de Missões: "+this.missoesRealizadas.size();
     }
-    public boolean executarMissao(Missao missao){
-        if(this.nivelBateria>=50){
-            this.missoesRealizadas.add(missao);
-        }
-    }
+    abstract public boolean executarMissao(Missao missao);
     public void enviarMensagem(String mensagem){
         System.out.print("Mensagem enviada: "+mensagem);
     }

@@ -22,9 +22,7 @@ public class Drone extends Robo {
     }
     //-------------------------------\\
     public Drone(int id, String nome, StatusRobo status, boolean imagem, int altitudeMax){
-        super.id = id;
-        super.nome = nome;
-        super.status = status;
+        super(id, nome, status);
         super.nivelBateria = 100;
         this.altitudeMax = altitudeMax;
         this.imagem = imagem;
@@ -35,7 +33,9 @@ public class Drone extends Robo {
         if(super.nivelBateria>=50){
             this.missoesRealizadas.add(missao);
             super.nivelBateria += -50;
+            return true;
         }
+        return false;
     }
     
 }
