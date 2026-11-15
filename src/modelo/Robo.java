@@ -1,6 +1,6 @@
 package modelo;
 //imports
-import java.util.ArrayList;
+import java.util.*;
 import java.io.Serializable;
 import enums.StatusRobo;
 public abstract class Robo implements Comunicavel, Serializable{
@@ -52,15 +52,15 @@ public abstract class Robo implements Comunicavel, Serializable{
         setNivelBateria(100);
         return "Bateria Recarregada";
     }
-    protected String exibirResumo(){
-        return "Id: "+this.id+"\n"+"Nome: "+this.nome+"\n"+"Bateria: "+this.nivelBateria+"\n"+"Status: "+this.status+"\n"+"Quantidade de Missões: "+this.missoesRealizadas.size();
-    }
+    public abstract boolean verificarCompatibilidadeArea(AreaOperacao area);
     public abstract boolean executarMissao(Missao missao);
+    public abstract String exibirResumo();
     public void enviarMensagem(String mensagem){
         System.out.print("Mensagem enviada: "+mensagem);
     }
     public void receberMensagem(String mensagem){
         System.out.print("Mensagem recebida: "+mensagem);
     }
+
     
 }

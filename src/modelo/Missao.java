@@ -100,6 +100,10 @@ public class Missao implements Serializable {
     public String getResultado() {
         return resultado;
     }
+    //Metodos Setters
+    public void setStatus(StatusMissao statusMissao) {
+        this.statusMissao = statusMissao;
+    }
 
     //Metodo que liga um robô à missão. Só dá para atribuir enquanto a missão estiver pendente.
     public void atribuirRobo(Robo robo) throws MissaoInvalidaException {
