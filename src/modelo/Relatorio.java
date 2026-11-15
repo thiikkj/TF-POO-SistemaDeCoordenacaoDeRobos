@@ -4,11 +4,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Collection;
 import enums.StatusMissao;
 import excecoes.PersistenciaException;
 
-//Essa classe gera um resumo com os números da central: quantos robôs, quantas missões, quantas concluídas, etc.
+//Essa classe gera um resumo com os números da central: quantos robôs, quantas missões, quantas concluídas etc.
 public class Relatorio {
 
     //Atributos
@@ -29,8 +29,10 @@ public class Relatorio {
         //Guarda o dia e a hora em que o relatório foi gerado
         this.dataGeracao = LocalDateTime.now();
 
-        //Esses métodos precisam existir na CentralResgate
-        List<Missao> missoes = central.getMissoes();
+        //Collection é o tipo "pai" das listas e dos conjuntos, então serve para o que a central devolver.
+        Collection<Missao> missoes = central.getMissoes();
+
+        //Esses três números são só o tamanho das coleções
         this.totalRobos = central.getRobos().size();
         this.totalMissoes = missoes.size();
         this.missoesPendentes = central.getMissoesPendentes().size();
@@ -39,13 +41,13 @@ public class Relatorio {
         //filter(...) fica só com as missões em que a lambda dá true (aqui, as concluídas).
         //count() conta quantas sobraram. O (int) converte o resultado de long para int.
         this.missoesConcluidas = (int) missoes.stream()
-            .filter(m -> m.getStatus() == StatusMissao.CONCLUIDA)
-            .count();
+                .filter(m -> m.getStatus() == StatusMissao.CONCLUIDA)
+                .count();
 
         //Mesma ideia, agora contando as canceladas
         this.missoesCanceladas = (int) missoes.stream()
-            .filter(m -> m.getStatus() == StatusMissao.CANCELADA)
-            .count();
+                .filter(m -> m.getStatus() == StatusMissao.CANCELADA)
+                .count();
     }
 
     //Metodos Getters
@@ -73,6 +75,7 @@ public class Relatorio {
     public String gerarResumo() {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+        //O "\n" no final de cada linha pula para a próxima linha
         return "===RELATÓRIO GERAL===\n"
                 + "Gerado em: " + dataGeracao.format(formato) + "\n"
                 + "Total de robôs: " + totalRobos + "\n"
