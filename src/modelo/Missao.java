@@ -101,7 +101,6 @@ public class Missao implements Serializable {
         return resultado;
     }
 
-
     //Metodo que liga um robô à missão. Só dá para atribuir enquanto a missão estiver pendente.
     public void atribuirRobo(Robo robo) throws MissaoInvalidaException {
         if (robo == null) {
@@ -116,7 +115,7 @@ public class Missao implements Serializable {
     }
 
     //Metodo que inicia a missão. Muda o status para EM_ANDAMENTO.
-    public void iniciarMissao() throws MissaoInvalidaException {
+    public void iniciar() throws MissaoInvalidaException {
 
         //REGRA 9: missão concluída ou cancelada não pode ser iniciada de novo
         if (statusMissao == StatusMissao.CONCLUIDA || statusMissao == StatusMissao.CANCELADA) {
@@ -136,14 +135,14 @@ public class Missao implements Serializable {
     }
 
     //Metodo que conclui a missão e guarda o resultado. Só dá para concluir uma missão que está em andamento.
-    public void concluirMissao(String resultado) throws MissaoInvalidaException {
+    public void concluir(String resultado) throws MissaoInvalidaException {
         if (statusMissao != StatusMissao.EM_ANDAMENTO) {
             throw new MissaoInvalidaException("ERRO - Só é possível concluir uma missão que está em andamento.");
         }
 
         //Se não vier nenhum resultado, guarda um texto padrão para o campo não ficar vazio.
         if (resultado == null || resultado.trim().isEmpty()) {
-            this.resultado = "Missão concluída sem resultado específico.";    
+            this.resultado = "Missão concluída sem resultado específico.";
         } else {
             this.resultado = resultado;
         }
@@ -152,7 +151,7 @@ public class Missao implements Serializable {
     }
 
     //Metodo que cancela a missão. Missão que já terminou ou já foi cancelada não pode ser cancelada.
-    public void cancelarMissao() throws MissaoInvalidaException {
+    public void cancelar() throws MissaoInvalidaException {
         if (statusMissao == StatusMissao.CONCLUIDA || statusMissao == StatusMissao.CANCELADA) {
             throw new MissaoInvalidaException("ERRO - Uma missão concluída ou cancelada não pode ser cancelada novamente.");
         }
