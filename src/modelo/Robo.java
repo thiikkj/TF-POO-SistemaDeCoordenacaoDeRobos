@@ -53,6 +53,7 @@ public abstract class Robo implements Comunicavel, Serializable{
         return "Bateria Recarregada";
     }
     public abstract boolean verificarCompatibilidadeArea(AreaOperacao area);
+    public abstract boolean checarBateriaMinima(Missao missao);
     public abstract boolean executarMissao(Missao missao);
     public abstract String exibirResumo();
     public void enviarMensagem(String mensagem){

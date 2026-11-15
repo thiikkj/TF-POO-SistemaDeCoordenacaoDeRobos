@@ -64,6 +64,26 @@ public class Drone extends Robo {
         return "Id: "+this.id+"\n"+"Nome: "+this.nome+"\n"+"Bateria: "+this.nivelBateria+"\n"+"Status: "+this.status+"\n"+"Quantidade de Missões: "+this.missoesRealizadas.size()+"\n"+"Imagem: "+this.imagem+"\n"+"Altitude Máxima: "+this.altitudeMax;
     }
     @Override
+    public boolean checarBateriaMinima(Missao missao){
+        int prioridade;
+        if(missao.getPrioridade() ==enums.PrioridadeMissao.ALTA){
+            prioridade = 10;
+        }
+        else if(missao.getPrioridade() == enums.PrioridadeMissao.MEDIA){
+            prioridade = 5;
+        }
+        else{
+            prioridade = 0;
+        }
+        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO && super.nivelBateria>=30 + prioridade){
+            return true;
+        }
+        else if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
+            return true;
+        }
+        return false;
+    }
+    @Override
     public boolean checarTipoMissao(Missao missao){
         if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO || missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS){
             return true;
