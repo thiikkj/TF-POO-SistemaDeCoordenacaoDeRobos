@@ -33,12 +33,10 @@ public class RoboTerrestre extends Robo {
         this.cargaMax = cargaMax;
         super.missoesRealizadas = new ArrayList<Missao>(0);
     }
-
-    @Override 
     public boolean executarMissao(Missao missao){
         if(super.nivelBateria>=50){
             super.missoesRealizadas.add(missao);
-            super.nivelBateria += -50;
+            super.nivelBateria -= 50;
             return true;
         }
         return false;
