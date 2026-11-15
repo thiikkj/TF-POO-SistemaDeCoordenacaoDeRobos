@@ -3,28 +3,67 @@ package modelo;
 import java.util.*;
 import enums.StatusRobo;
 import enums.TipoTerreno;
+import excecoes.MissaoInvalidaException;
+import java.io.Serializable;
 
-public class CentralResgate {
+public class CentralResgate implements Serializable{
     public String nome;
     public Queue<Missao> missoesPendentes;
     public ArrayList<Robo> robos;
-    public HashMap<Integer, TipoTerreno> areasOperacao;
+    public HashMap<Integer, AreaOperacao> areasOperacao;
     public Set<Missao> missoes;
+    //getters e setters
+    public String getNome(){
+        return this.nome;
+    }
+    public Queue<Missao> getMissoesPendentes(){
+        return this.missoesPendentes;
+    }
+    public ArrayList<Robo> getRobos(){
+        return this.robos;
+    }
+    public HashMap<Integer, AreaOperacao> getAreasOperacao(){
+        return this.areasOperacao;
+    }
+    public Set<Missao> getMissoes(){
+        return this.missoes;
+    }
+    public void setNome(String nome){
+        this.nome = nome;
+    }
+    public void setMissoesPendentes(Queue<Missao> missoesPendentes){
+        this.missoesPendentes = missoesPendentes;
+    }
+    public void setRobos(ArrayList<Robo> robos){
+        this.robos = robos;
+    }
+    public void setAreasOperacao(HashMap<Integer, AreaOperacao> areasOperacao){
+        this.areasOperacao = areasOperacao;
+    }
+    public void setMissoes(Set<Missao> missoes){
+        this.missoes = missoes;
+    }
     //--------------\\
     public CentralResgate(String nome){
         this.nome = nome;
         this.missoesPendentes = new LinkedList<Missao>();
         this.robos = new ArrayList<Robo>();
-        this.areasOperacao = new HashMap<Integer, TipoTerreno>();
+        this.areasOperacao = new HashMap<Integer, AreaOperacao>();
         this.missoes = new HashSet<Missao>(0);
+    }
+    public void listarMissoesPendentes(){
+        System.out.println("Missões Pendentes:");
+        for(Missao missao : this.missoesPendentes){
+            System.out.println("Id: "+missao.getIdMissao()+" Tipo: "+missao.getTipo()+" Prioridade: "+missao.getPrioridade()+" Status: "+missao.getStatus());
+        }
     }
     public void cadastrarRobo(Robo robo){
         this.robos.add(robo);
     }
-    public void cadastrarArea(int id, TipoTerreno terreno){
-        this.areasOperacao.put(id, terreno);
+    public void cadastrarArea(int id, AreaOperacao area){
+        this.areasOperacao.put(id, area);
     }
-    public void adicionarMissao(Missao missao){
+    public void registrarMissao(Missao missao){
         this.missoes.add(missao);
         if(missao.getStatus() == enums.StatusMissao.PENDENTE){
             this.missoesPendentes.add(missao);
@@ -98,20 +137,25 @@ public class CentralResgate {
         if(this.areasOperacao.containsKey(id)){
             System.out.println("Área de Operação:");
             System.out.println("Id: "+id);
-            System.out.println("Tipo de Terreno: "+this.areasOperacao.get(id));
+            System.out.println("Tipo de Terreno: "+this.areasOperacao.get(id).getTipoTerreno());
         }
         else{
             System.out.println("Área de Operação não encontrada");
         }
     }
-    public boolean comecarMissao(Robo robo, Missao missao){
-        if(this.robos.contains(robo) && this.robos.get(this.robos.indexOf(robo)).verificarDisponibilidade() == StatusRobo.DISPONIVEL && this.missoesPendentes.contains(missao) && this.robos.get(this.robos.indexOf(robo)).executarMissao(missao) && this.robos.get(this.robos.indexOf(robo)).verificarCompatibilidadeArea(missao.getArea())){
+    public boolean atribuirRoboMissao(Robo robo, Missao missao) throws MissaoInvalidaException{
+        if(this.robos.contains(robo) && this.robos.get(this.robos.indexOf(robo)).verificarDisponibilidade() == StatusRobo.DISPONIVEL && this.missoesPendentes.contains(missao) && this.robos.get(this.robos.indexOf(robo)).verificarCompatibilidadeArea(missao.getArea()) && this.robos.get(this.robos.indexOf(robo)).checarTipoMissao(missao)){
             missao.atribuirRobo(robo);
-            missao.setStatus(enums.StatusMissao.EM_ANDAMENTO);
+            missao.iniciar();
             this.robos.get(this.robos.indexOf(robo)).setStatus(StatusRobo.EM_MISSAO);
             return true;
         }
         return false;
     }
-    
+    public void finalizarMissao(Missao missao, String resultado) throws MissaoInvalidaException{
+        if(this.robos.contains(missao.getRoboResponsavel()) && this.robos.get(this.robos.indexOf(missao.getRoboResponsavel())).verificarDisponibilidade() == StatusRobo.EM_MISSAO && this.missoesPendentes.contains(missao) && this.robos.get(this.robos.indexOf(missao.getRoboResponsavel())).executarMissao(missao) && this.robos.get(this.robos.indexOf(missao.getRoboResponsavel())).verificarCompatibilidadeArea(missao.getArea())){
+            missao.concluir(resultado);
+            missao.getRoboResponsavel().executarMissao(missao);
+        }
+    }
 }

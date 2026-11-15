@@ -61,6 +61,16 @@ public abstract class Robo implements Comunicavel, Serializable{
     public void receberMensagem(String mensagem){
         System.out.print("Mensagem recebida: "+mensagem);
     }
-
+    public abstract boolean checarTipoMissao(Missao missao);
+    public boolean concertar(){
+        if(this.status == StatusRobo.EM_MANUTENCAO){
+            this.status = StatusRobo.DISPONIVEL;
+            this.nivelBateria = 100;
+            System.out.println("Robo "+this.nome+" foi concertado");
+            return true;
+        }
+        System.out.println("Robo "+this.nome+" não estava danificado");
+        return false;
+    }
     
 }

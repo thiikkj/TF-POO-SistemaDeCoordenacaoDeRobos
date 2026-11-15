@@ -45,17 +45,12 @@ public class RoboTerrestre extends Robo {
         else{
             prioridade = 0;
         }
-        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO && super.nivelBateria>=30){
-            super.missoesRealizadas.add(missao);
-            super.nivelBateria -= 30 + prioridade;
-            return true;
-        }
-        else if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40){
+        if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 40 + prioridade;
             return true;
         }
-        else if(missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS && super.nivelBateria>=50){
+        else if(missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS && super.nivelBateria>=50 + prioridade){
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 50 + prioridade;
             return true;
@@ -69,6 +64,13 @@ public class RoboTerrestre extends Robo {
     @Override 
     public boolean verificarCompatibilidadeArea(AreaOperacao area){
         if(area.getTipoTerreno() == this.terreno){
+            return true;
+        }
+        return false;
+    }
+    @Override 
+    public boolean checarTipoMissao(Missao missao){
+        if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS || missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS){
             return true;
         }
         return false;

@@ -40,23 +40,21 @@ public class Drone extends Robo {
         else{
             prioridade = 0;
         }
-        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO && super.nivelBateria>=30){
+        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO && super.nivelBateria>=30 + prioridade){
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 30 + prioridade;
+            super.status = StatusRobo.DISPONIVEL;
             return true;
         }
-        else if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40){
+        else if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 40 + prioridade;
-            return true;
-        }
-        else if(missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS && super.nivelBateria>=50){
-            super.missoesRealizadas.add(missao);
-            super.nivelBateria -= 50 + prioridade;
+            super.status = StatusRobo.DISPONIVEL;
             return true;
         }
         return false;
     }
+    
     @Override
     public boolean verificarCompatibilidadeArea(AreaOperacao area){
         return true;
@@ -65,5 +63,11 @@ public class Drone extends Robo {
     public String exibirResumo(){
         return "Id: "+this.id+"\n"+"Nome: "+this.nome+"\n"+"Bateria: "+this.nivelBateria+"\n"+"Status: "+this.status+"\n"+"Quantidade de Missões: "+this.missoesRealizadas.size()+"\n"+"Imagem: "+this.imagem+"\n"+"Altitude Máxima: "+this.altitudeMax;
     }
-    
+    @Override
+    public boolean checarTipoMissao(Missao missao){
+        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO || missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS){
+            return true;
+        }
+        return false;
+    }
 }
