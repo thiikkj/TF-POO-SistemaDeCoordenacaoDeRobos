@@ -33,14 +33,50 @@ Porque, diante de qualquer adversidade, salvar uma vida, oferecer esperança e e
 - `dados/`: arquivos de dados de exemplo
 
 ## Regras de compatibilidade
-- **Drone:** reconhecimento e localização de pessoas, em qualquer tipo de terreno.
-- **Robô terrestre:** localização de pessoas e transporte de suprimentos, apenas em áreas do mesmo tipo de terreno que ele atua.
+Para um robô receber uma missão, a central confere quatro coisas, nesta ordem:
+
+1. **A missão está PENDENTE.** Missão em andamento, concluída ou cancelada não recebe outro robô.
+2. **O robô está DISPONIVEL.** Robô em missão, em manutenção ou sem bateria fica de fora.
+3. **O robô faz aquele tipo de missão e atua no terreno da área:**
+
+| Robô | Reconhecimento | Localização de pessoas | Transporte de suprimentos | Terreno |
+|---|:---:|:---:|:---:|---|
+| Drone | ✔ | ✔ | ✘ | qualquer um (ele voa) |
+| Robô terrestre | ✘ | ✔ | ✔ | só o tipo de terreno em que ele atua (URBANO, ALAGADO ou IRREGULAR) |
+
+4. **O robô tem bateria suficiente** para a missão inteira (ver abaixo).
+
+Se alguma regra falhar, a missão continua pendente e o sistema mostra o motivo com uma mensagem `ERRO - ...`.
+
+Além disso, cada robô e cada missão tem um **ID único**: a central compara o ID (e não o objeto) antes de cadastrar, então não existem dois robôs ou duas missões com o mesmo número.
 
 ## Consumo de bateria
-Cada missão tem um custo base (30 reconhecimento, 40 localização de pessoas, 50 transporte) somado a um adicional pela prioridade (0 baixa, 5 média, 10 alta). O robô só recebe a missão se tiver bateria suficiente.
+A bateria é uma porcentagem e fica sempre entre **0 e 100**: o `setNivelBateria` recusa qualquer valor fora disso com `DadosInvalidosException`. Todo robô começa com 100%.
+
+O gasto de uma missão é o **custo base do tipo de missão** somado a um **adicional pela prioridade** (missões urgentes exigem que o robô vá mais rápido, então gastam mais):
+
+| Tipo de missão | Custo base | + Baixa (0) | + Média (5) | + Alta (10) |
+|---|:---:|:---:|:---:|:---:|
+| Reconhecimento | 30% | 30% | 35% | 40% |
+| Localização de pessoas | 40% | 40% | 45% | 50% |
+| Transporte de suprimentos | 50% | 50% | 55% | 60% |
+
+- O robô só **recebe** a missão se a bateria atual for maior ou igual ao gasto dela.
+- A bateria é **descontada quando a missão é finalizada**. Depois disso o robô volta a ficar DISPONIVEL.
+- Se a bateria chegar a **0%**, o robô fica **SEM_BATERIA** e só volta a receber missões depois de ser recarregado (opção 14 do menu, que volta a bateria para 100%).
+
+Exemplo: a Capivara-04 (100%) faz a missão 2, localização de pessoas com prioridade alta. Ela gasta 40 + 10 = 50% e termina com 50%.
 
 ## Funcionalidade inovadora
-??? (Precisamos Terminar)
+**Planejamento de bateria e atribuição automática das missões urgentes.**
+
+Num resgate de verdade, mandar um robô que fica sem bateria no meio do caminho é perder o robô e a missão. Por isso a central calcula, antes de tudo, quanto cada robô vai gastar:
+
+- **Cálculo da bateria necessária** (`Robo.calcularBateriaNecessaria`): cada subclasse informa o custo base das missões que realiza (`custoBase`, método abstrato), e a classe `Robo` soma o adicional da prioridade. Com isso, `checarBateriaMinima` e `executarMissao` ficam escritos uma vez só na classe mãe e funcionam para o Drone e para o Robô Terrestre (polimorfismo).
+- **Consulta antes de mandar o robô** (opção **20** do menu): para uma missão escolhida, a central mostra, robô por robô, quanto ele gastaria e com quanto ficaria depois, ou o motivo de não poder ir (tipo de missão, terreno ou falta de bateria).
+- **Missões urgentes automáticas** (opção **13** do menu): a central percorre a fila e, para cada missão de prioridade ALTA que ainda está PENDENTE, escolhe entre os robôs compatíveis **o que vai ficar com mais bateria depois da missão**. Assim sobra mais carga na equipe para as próximas emergências. Em caso de empate, vai o robô cadastrado primeiro. Missões que já começaram são ignoradas, e as que nenhum robô consegue assumir continuam pendentes.
+
+Exemplo com os dados iniciais: a opção 20 na missão 4 (Encosta da Serra, terreno IRREGULAR) mostra que só os drones podem ir, gastando 50% cada. A opção 13 manda o Tatu-03 para a missão 3 e o Gavião-01 para a missão 4.
 
 ## Como usar o sistema
 
@@ -90,12 +126,13 @@ Todos os robôs começam disponíveis e com 100% de bateria.
 | 10 | Atribui um robô a uma missão. Se o robô for compatível e tiver bateria, a missão já começa (EM_ANDAMENTO). |
 | 11 | Finaliza uma missão em andamento e registra o resultado. O robô gasta a bateria da missão e volta a ficar disponível. |
 | 12 | Cancela uma missão. Se ela estava em andamento, o robô é liberado. |
-| 13 | Atribui automaticamente as missões de prioridade ALTA ao primeiro robô disponível e compatível. |
+| 13 | Atribui automaticamente as missões de prioridade ALTA que estão pendentes, escolhendo o robô compatível que fica com mais bateria depois da missão. |
 | 14 | Recarrega a bateria de um robô para 100%. |
 | 15 | Troca mensagens entre a central e um robô (interface `Comunicavel`). |
 | 16 | Atualiza o nível de risco de uma área. |
 | 17 | Mostra o relatório geral e, se quiser, salva em `dados/relatorio.txt`. |
 | 18 / 19 | Salva / carrega todos os dados em `dados/central.dat`. |
+| 20 | Mostra quanto de bateria cada robô gastaria numa missão e com quanto ficaria depois (funcionalidade inovadora). |
 | 0 | Sai do sistema (pergunta se quer salvar antes). |
 
 ### Exemplo rápido
