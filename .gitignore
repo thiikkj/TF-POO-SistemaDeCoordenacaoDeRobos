@@ -10,3 +10,7 @@ bin/
 
 # Arquivo do sistema (Mac)
 .DS_Store
+
+# Arquivos gerados pelo sistema ao salvar os dados e o relatório
+dados/central.dat
+dados/relatorio.txt

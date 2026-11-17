@@ -43,4 +43,74 @@ Cada missão tem um custo base (30 reconhecimento, 40 localização de pessoas, 
 ??? (Precisamos Terminar)
 
 ## Como usar o sistema
-??? (Precisa da Main do João pronta)
+
+### Executando
+O programa roda no console e precisa do Java 17 ou mais novo.
+
+**No IntelliJ:** abra a pasta do projeto, clique com o botão direito em `src` → *Mark Directory as* → *Sources Root* (se ainda não estiver marcada) e execute a classe `app.Main`.
+
+**Pelo terminal**, a partir da pasta do projeto:
+```
+javac -encoding UTF-8 -d out $(find src -name "*.java")
+java -cp out app.Main
+```
+> O programa precisa ser executado a partir da pasta do projeto, porque é nela que fica a pasta `dados/`.
+
+### Primeira execução
+Se não existir nenhum arquivo salvo, o sistema começa com dados de exemplo inspirados nas enchentes de 2024 no RS:
+
+| Áreas | Terreno | Risco |
+|---|---|---|
+| 1 - Bairro Sarandi (Porto Alegre) | ALAGADO | ALTO |
+| 2 - Centro Histórico (Porto Alegre) | URBANO | MEDIO |
+| 3 - Encosta da Serra (Gramado) | IRREGULAR | ALTO |
+
+| Robôs | Tipo | Detalhe |
+|---|---|---|
+| 1 - Gavião-01 | Drone | captura imagens, 120 m de altitude |
+| 2 - Coruja-02 | Drone | sem câmera, 80 m de altitude |
+| 3 - Tatu-03 | Robô terrestre | terreno URBANO, 80 kg de carga |
+| 4 - Capivara-04 | Robô terrestre | terreno ALAGADO, 150 kg de carga |
+
+| Missões | Tipo | Prioridade | Área |
+|---|---|---|---|
+| 1 - Mapear as ruas alagadas | RECONHECIMENTO | MEDIA | 1 |
+| 2 - Localizar moradores ilhados | LOCALIZACAO_PESSOAS | ALTA | 1 |
+| 3 - Levar água e remédios ao abrigo | TRANSPORTE_SUPRIMENTOS | ALTA | 2 |
+| 4 - Procurar pessoas soterradas | LOCALIZACAO_PESSOAS | ALTA | 3 |
+| 5 - Levar coletes salva-vidas | TRANSPORTE_SUPRIMENTOS | BAIXA | 1 |
+
+Todos os robôs começam disponíveis e com 100% de bateria.
+
+### Menu
+| Opção | O que faz |
+|---|---|
+| 1 a 3 | Cadastra uma área, um robô (drone ou terrestre) ou uma missão. Toda missão nova entra na fila como PENDENTE. |
+| 4 a 9 | Lista áreas, robôs, robôs disponíveis, missões, a fila de pendentes e o resumo da central. |
+| 10 | Atribui um robô a uma missão. Se o robô for compatível e tiver bateria, a missão já começa (EM_ANDAMENTO). |
+| 11 | Finaliza uma missão em andamento e registra o resultado. O robô gasta a bateria da missão e volta a ficar disponível. |
+| 12 | Cancela uma missão. Se ela estava em andamento, o robô é liberado. |
+| 13 | Atribui automaticamente as missões de prioridade ALTA ao primeiro robô disponível e compatível. |
+| 14 | Recarrega a bateria de um robô para 100%. |
+| 15 | Troca mensagens entre a central e um robô (interface `Comunicavel`). |
+| 16 | Atualiza o nível de risco de uma área. |
+| 17 | Mostra o relatório geral e, se quiser, salva em `dados/relatorio.txt`. |
+| 18 / 19 | Salva / carrega todos os dados em `dados/central.dat`. |
+| 0 | Sai do sistema (pergunta se quer salvar antes). |
+
+### Exemplo rápido
+1. `10` → missão `2`, robô `4`: a Capivara-04 começa a localizar os moradores ilhados.
+2. `11` → missão `2`, resultado `12 moradores resgatados`: a missão é concluída e a Capivara-04 fica com 50% de bateria.
+3. `13`: as missões urgentes 3 e 4 recebem os robôs Tatu-03 e Gavião-01.
+4. `17`: o relatório mostra 5 missões, 1 concluída e 2 pendentes.
+
+### Erros tratados
+O sistema não fecha quando algo dá errado: ele mostra uma mensagem começando com `ERRO -` e volta para o menu. Alguns exemplos:
+- letras no lugar de números, ou uma opção que não existe no menu;
+- IDs repetidos, IDs menores ou iguais a zero e campos obrigatórios vazios;
+- robô que não faz aquele tipo de missão, que não atua no terreno da área, que já está em missão ou que não tem bateria suficiente;
+- finalizar uma missão que não começou, ou cancelar uma que já terminou;
+- carregar os dados sem nenhum arquivo salvo.
+
+### Dados salvos
+Ao abrir, o sistema carrega `dados/central.dat` se ele existir. Para voltar aos dados de exemplo, apague esse arquivo.
