@@ -1,0 +1,12 @@
+# Arquivos compilados do Java
+out/
+bin/
+*.class
+
+# Arquivos de configuração das IDEs
+.idea/
+*.iml
+.vscode/
+
+# Arquivo do sistema (Mac)
+.DS_Store
