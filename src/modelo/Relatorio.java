@@ -32,10 +32,9 @@ public class Relatorio {
         //Collection é o tipo "pai" das listas e dos conjuntos, então serve para o que a central devolver.
         Collection<Missao> missoes = central.getMissoes();
 
-        //Esses três números são só o tamanho das coleções
+        //Esses dois números são só o tamanho das coleções
         this.totalRobos = central.getRobos().size();
         this.totalMissoes = missoes.size();
-        this.missoesPendentes = central.getMissoesPendentes().size();
 
         //stream() pega a lista de missões e passa uma por uma pelos passos abaixo.
         //filter(...) fica só com as missões em que a lambda dá true (aqui, as concluídas).
@@ -44,7 +43,13 @@ public class Relatorio {
                 .filter(m -> m.getStatus() == StatusMissao.CONCLUIDA)
                 .count();
 
-        //Mesma ideia, agora contando as canceladas
+        //Mesma ideia, agora contando as pendentes pelo status.
+        //Não usamos o tamanho da fila porque a central mantém na fila missões que já começaram.
+        this.missoesPendentes = (int) missoes.stream()
+                .filter(m -> m.getStatus() == StatusMissao.PENDENTE)
+                .count();
+
+        //E as canceladas
         this.missoesCanceladas = (int) missoes.stream()
                 .filter(m -> m.getStatus() == StatusMissao.CANCELADA)
                 .count();
