@@ -82,17 +82,29 @@ public class CentralResgate implements Serializable{
             }
         }
     }
-    public void cadastrarRobo(Robo robo){
+    public boolean cadastrarRobo(Robo robo){
+        if(robos.contains(robo)){
+            return false;
+        }
         this.robos.add(robo);
+        return true;
     }
-    public void cadastrarArea(int id, AreaOperacao area){
+    public boolean cadastrarArea(Integer id, AreaOperacao area){
+        if(areasOperacao.containsKey(id)){
+            return false;
+        }
         this.areasOperacao.put(id, area);
+        return true;
     }
-    public void registrarMissao(Missao missao){
+    public boolean registrarMissao(Missao missao){
+        if(missoes.contains(missao)){
+            return false;
+        }
         this.missoes.add(missao);
         if(missao.getStatus() == enums.StatusMissao.PENDENTE){
             this.missoesPendentes.add(missao);
         }
+        return true;
     }
     public void removerMissao(Missao missao){
         this.missoes.remove(missao);
@@ -169,7 +181,7 @@ public class CentralResgate implements Serializable{
         }
     }
     public boolean atribuirRoboMissao(Robo robo, Missao missao) throws MissaoInvalidaException{
-        if(this.robos.get(this.robos.indexOf(robo)).checarBateriaMinima(missao) && this.robos.contains(robo) && this.robos.get(this.robos.indexOf(robo)).verificarDisponibilidade() == StatusRobo.DISPONIVEL && this.missoesPendentes.contains(missao) && this.robos.get(this.robos.indexOf(robo)).verificarCompatibilidadeArea(missao.getArea()) && this.robos.get(this.robos.indexOf(robo)).checarTipoMissao(missao)){
+        if(this.robos.contains(robo) && this.robos.get(this.robos.indexOf(robo)).checarBateriaMinima(missao) && this.robos.get(this.robos.indexOf(robo)).verificarDisponibilidade() == StatusRobo.DISPONIVEL && this.missoesPendentes.contains(missao) && this.robos.get(this.robos.indexOf(robo)).verificarCompatibilidadeArea(missao.getArea()) && this.robos.get(this.robos.indexOf(robo)).checarTipoMissao(missao)){
             missao.atribuirRobo(robo);
             missao.iniciar();
             this.robos.get(this.robos.indexOf(robo)).setStatus(StatusRobo.EM_MISSAO);
@@ -177,10 +189,13 @@ public class CentralResgate implements Serializable{
         }
         return false;
     }
-    public void finalizarMissao(Missao missao, String resultado) throws MissaoInvalidaException{
+    public void finalizarMissao (Missao missao, String resultado) throws MissaoInvalidaException{
         if(this.robos.contains(missao.getRoboResponsavel()) && this.robos.get(this.robos.indexOf(missao.getRoboResponsavel())).verificarDisponibilidade() == StatusRobo.EM_MISSAO && this.missoesPendentes.contains(missao) &&  this.robos.get(this.robos.indexOf(missao.getRoboResponsavel())).verificarCompatibilidadeArea(missao.getArea())){
             missao.concluir(resultado);
             missao.getRoboResponsavel().executarMissao(missao);
         }
+    }
+    public Relatorio gerarRelatorioGeral(){
+        return new Relatorio(this);
     }
 }

@@ -44,12 +44,18 @@ public class Drone extends Robo {
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 30 + prioridade;
             super.status = StatusRobo.DISPONIVEL;
+            if(super.nivelBateria == 0){
+                setStatus(StatusRobo.SEM_BATERIA);
+            }
             return true;
         }
         else if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 40 + prioridade;
             super.status = StatusRobo.DISPONIVEL;
+            if(super.nivelBateria == 0){
+                setStatus(StatusRobo.SEM_BATERIA);
+            }
             return true;
         }
         return false;

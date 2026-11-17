@@ -49,12 +49,18 @@ public class RoboTerrestre extends Robo {
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 40 + prioridade;
             super.status = StatusRobo.DISPONIVEL;
+            if(super.nivelBateria == 0){
+                setStatus(StatusRobo.SEM_BATERIA);
+            }
             return true;
         }
         else if(missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS && super.nivelBateria>=50 + prioridade){
             super.missoesRealizadas.add(missao);
             super.nivelBateria -= 50 + prioridade;
             super.status = StatusRobo.DISPONIVEL;
+            if(super.nivelBateria == 0){
+                setStatus(StatusRobo.SEM_BATERIA);
+            }
             return true;
         }  
         return false;

@@ -38,9 +38,6 @@ public abstract class Robo implements Comunicavel, Serializable{
     public void setNome(String nome){
         this.nome = nome;
     }
-    public void setId(int id){
-        this.id = id;
-    }
     //-------------------------------\\
     protected StatusRobo verificarDisponibilidade(){
         return this.status;
@@ -50,6 +47,9 @@ public abstract class Robo implements Comunicavel, Serializable{
     }
     protected String recarregar(){
         setNivelBateria(100);
+        if(this.status == StatusRobo.SEM_BATERIA){
+            setStatus(StatusRobo.DISPONIVEL);
+        }
         return "Bateria Recarregada";
     }
     public abstract boolean verificarCompatibilidadeArea(AreaOperacao area);
@@ -57,10 +57,10 @@ public abstract class Robo implements Comunicavel, Serializable{
     public abstract boolean executarMissao(Missao missao);
     public abstract String exibirResumo();
     public void enviarMensagem(String mensagem){
-        System.out.print("Mensagem enviada: "+mensagem);
+        System.out.println("Mensagem enviada: "+mensagem);
     }
     public void receberMensagem(String mensagem){
-        System.out.print("Mensagem recebida: "+mensagem);
+        System.out.println("Mensagem recebida: "+mensagem);
     }
     public abstract boolean checarTipoMissao(Missao missao);
     public boolean concertar(){
