@@ -1,6 +1,6 @@
 package modelo;
 //imports
-import java.util.ArrayList;
+import java.util.*;
 import java.io.Serializable;
 import enums.StatusRobo;
 public abstract class Robo implements Comunicavel, Serializable{
@@ -38,9 +38,6 @@ public abstract class Robo implements Comunicavel, Serializable{
     public void setNome(String nome){
         this.nome = nome;
     }
-    public void setId(int id){
-        this.id = id;
-    }
     //-------------------------------\\
     protected StatusRobo verificarDisponibilidade(){
         return this.status;
@@ -50,17 +47,31 @@ public abstract class Robo implements Comunicavel, Serializable{
     }
     protected String recarregar(){
         setNivelBateria(100);
+        if(this.status == StatusRobo.SEM_BATERIA){
+            setStatus(StatusRobo.DISPONIVEL);
+        }
         return "Bateria Recarregada";
     }
-    protected String exibirResumo(){
-        return "Id: "+this.id+"\n"+"Nome: "+this.nome+"\n"+"Bateria: "+this.nivelBateria+"\n"+"Status: "+this.status+"\n"+"Quantidade de Missões: "+this.missoesRealizadas.size();
-    }
+    public abstract boolean verificarCompatibilidadeArea(AreaOperacao area);
+    public abstract boolean checarBateriaMinima(Missao missao);
     public abstract boolean executarMissao(Missao missao);
+    public abstract String exibirResumo();
     public void enviarMensagem(String mensagem){
-        System.out.print("Mensagem enviada: "+mensagem);
+        System.out.println("Mensagem enviada: "+mensagem);
     }
     public void receberMensagem(String mensagem){
-        System.out.print("Mensagem recebida: "+mensagem);
+        System.out.println("Mensagem recebida: "+mensagem);
+    }
+    public abstract boolean checarTipoMissao(Missao missao);
+    public boolean concertar(){
+        if(this.status == StatusRobo.EM_MANUTENCAO){
+            this.status = StatusRobo.DISPONIVEL;
+            this.nivelBateria = 100;
+            System.out.println("Robo "+this.nome+" foi concertado");
+            return true;
+        }
+        System.out.println("Robo "+this.nome+" não estava danificado");
+        return false;
     }
     
 }
