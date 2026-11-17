@@ -117,9 +117,13 @@ public abstract class Robo implements Comunicavel, Serializable{
         return necessaria >= 0 && this.nivelBateria >= necessaria;
     }
 
-    //Desconta a bateria gasta, guarda a missão no histórico e libera o robô.
-    //Se a bateria chegar a 0, o robô fica SEM_BATERIA até ser recarregado.
-    public boolean executarMissao(Missao missao){
+    //Cada tipo de robô executa a missão do seu jeito, então o método é abstrato e o Drone e o RoboTerrestre sobrescrevem.
+    //Lembrete: A central chama robo.executarMissao(missao) sem saber qual é a subclasse (polimorfismo).
+    public abstract boolean executarMissao(Missao missao);
+
+    //Parte que é igual para todos os robôs ao terminar uma missão: desconta a bateria gasta, guarda a missão no histórico e libera o robô.
+    //Se a bateria chegar a 0, o robô fica SEM_BATERIA até ser recarregado. Devolve false se o robô não puder fazer a missão.
+    protected boolean consumirBateria(Missao missao){
         if(!checarTipoMissao(missao) || !checarBateriaMinima(missao)){
             return false;
         }

@@ -42,6 +42,21 @@ public class Drone extends Robo {
         return -1;
     }
 
+    //O drone sobrevoa a área. Se tiver câmera, também registra imagens do local para a central.
+    @Override
+    public boolean executarMissao(Missao missao){
+        if(!consumirBateria(missao)){
+            return false;
+        }
+        if(this.imagem){
+            System.out.println("Drone "+getNome()+" sobrevoou a área "+missao.getArea().getNomeArea()+" e enviou as imagens para a central.");
+        }
+        else{
+            System.out.println("Drone "+getNome()+" sobrevoou a área "+missao.getArea().getNomeArea()+" (sem câmera, sem imagens).");
+        }
+        return true;
+    }
+
     //O drone voa, então o tipo de terreno não importa.
     @Override
     public boolean verificarCompatibilidadeArea(AreaOperacao area){

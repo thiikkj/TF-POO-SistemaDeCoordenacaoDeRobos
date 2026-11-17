@@ -48,6 +48,20 @@ public class RoboTerrestre extends Robo {
         }
         return -1;
     }
+    //O robô terrestre vai por terra até a área. No transporte, avisa até quantos quilos ele consegue levar.
+    @Override
+    public boolean executarMissao(Missao missao){
+        if(!consumirBateria(missao)){
+            return false;
+        }
+        if(missao.getTipo() == TipoMissao.TRANSPORTE_SUPRIMENTOS){
+            System.out.println("Robô "+getNome()+" levou os suprimentos até a área "+missao.getArea().getNomeArea()+" (carga máxima: "+this.cargaMax+" kg).");
+        }
+        else{
+            System.out.println("Robô "+getNome()+" percorreu a área "+missao.getArea().getNomeArea()+" por terra.");
+        }
+        return true;
+    }
     @Override
     public String exibirResumo(){
         return resumoBase()+"\n"+"Velocidade Máxima: "+this.velocidadeMax+"\n"+"Terreno: "+this.terreno+"\n"+"Carga Máxima: "+this.cargaMax;
