@@ -23,7 +23,17 @@ public abstract class Robo implements Comunicavel, Serializable{
     private StatusRobo status;
     private ArrayList<Missao> missoesRealizadas;
 
-    public Robo(int id, String nome, StatusRobo status){
+    //Construtor - Valida os dados recebidos e se algum dado for inválido, lança DadosInvalidosException.
+    public Robo(int id, String nome, StatusRobo status) throws DadosInvalidosException{
+        if(id <= 0){
+            throw new DadosInvalidosException("ERRO - O ID do robô deve ser maior que zero.");
+        }
+        if(nome == null || nome.trim().isEmpty()){
+            throw new DadosInvalidosException("ERRO - O nome do robô é obrigatório e não pode ser vazio.");
+        }
+        if(status == null){
+            throw new DadosInvalidosException("ERRO - O status do robô é obrigatório e não pode ser nulo.");
+        }
         this.id = id;
         this.nome = nome;
         this.status = status;
@@ -117,9 +127,13 @@ public abstract class Robo implements Comunicavel, Serializable{
         return necessaria >= 0 && this.nivelBateria >= necessaria;
     }
 
-    //Desconta a bateria gasta, guarda a missão no histórico e libera o robô.
-    //Se a bateria chegar a 0, o robô fica SEM_BATERIA até ser recarregado.
-    public boolean executarMissao(Missao missao){
+    //Cada tipo de robô executa a missão do seu jeito, então o método é abstrato e o Drone e o RoboTerrestre sobrescrevem.
+    //Lembrete: A central chama robo.executarMissao(missao) sem saber qual é a subclasse (polimorfismo).
+    public abstract boolean executarMissao(Missao missao);
+
+    //Parte que é igual para todos os robôs ao terminar uma missão: desconta a bateria gasta, guarda a missão no histórico e libera o robô.
+    //Se a bateria chegar a 0, o robô fica SEM_BATERIA até ser recarregado. Devolve false se o robô não puder fazer a missão.
+    protected boolean consumirBateria(Missao missao){
         if(!checarTipoMissao(missao) || !checarBateriaMinima(missao)){
             return false;
         }

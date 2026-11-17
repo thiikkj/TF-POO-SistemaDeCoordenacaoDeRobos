@@ -3,6 +3,7 @@ package modelo;
 import enums.StatusRobo;
 import enums.TipoMissao;
 import enums.TipoTerreno;
+import excecoes.DadosInvalidosException;
 
 //Robô que anda pelo chão. Faz localização de pessoas e transporte de suprimentos, mas só no tipo de terreno em que atua.
 public class RoboTerrestre extends Robo {
@@ -30,8 +31,17 @@ public class RoboTerrestre extends Robo {
     }
     //-------------------------------\\
 
-    public RoboTerrestre(int id, String nome, StatusRobo status, int velocidadeMax, TipoTerreno terreno, double cargaMax){
+    public RoboTerrestre(int id, String nome, StatusRobo status, int velocidadeMax, TipoTerreno terreno, double cargaMax) throws DadosInvalidosException{
         super(id, nome, status);
+        if(velocidadeMax <= 0){
+            throw new DadosInvalidosException("ERRO - A velocidade máxima deve ser maior que zero.");
+        }
+        if(terreno == null){
+            throw new DadosInvalidosException("ERRO - O tipo de terreno do robô é obrigatório e não pode ser nulo.");
+        }
+        if(cargaMax <= 0){
+            throw new DadosInvalidosException("ERRO - A carga máxima deve ser maior que zero.");
+        }
         this.velocidadeMax = velocidadeMax;
         this.terreno = terreno;
         this.cargaMax = cargaMax;
@@ -47,6 +57,20 @@ public class RoboTerrestre extends Robo {
             return 50;
         }
         return -1;
+    }
+    //O robô terrestre vai por terra até a área e avisa a central pela interface Comunicavel. No transporte, informa a carga que consegue levar.
+    @Override
+    public boolean executarMissao(Missao missao){
+        if(!consumirBateria(missao)){
+            return false;
+        }
+        if(missao.getTipo() == TipoMissao.TRANSPORTE_SUPRIMENTOS){
+            enviarMensagem("Robô "+getNome()+" levou os suprimentos até a área "+missao.getArea().getNomeArea()+" (carga máxima: "+this.cargaMax+" kg).");
+        }
+        else{
+            enviarMensagem("Robô "+getNome()+" percorreu a área "+missao.getArea().getNomeArea()+" por terra.");
+        }
+        return true;
     }
     @Override
     public String exibirResumo(){

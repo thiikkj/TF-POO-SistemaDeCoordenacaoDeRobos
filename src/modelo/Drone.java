@@ -2,6 +2,7 @@ package modelo;
 
 import enums.StatusRobo;
 import enums.TipoMissao;
+import excecoes.DadosInvalidosException;
 
 //Robô aéreo. Faz reconhecimento e localização de pessoas, e voa sobre qualquer tipo de terreno.
 public class Drone extends Robo {
@@ -24,8 +25,11 @@ public class Drone extends Robo {
         this.altitudeMax = altitudeMax;
     }
     //-------------------------------\\
-    public Drone(int id, String nome, StatusRobo status, boolean imagem, int altitudeMax){
+    public Drone(int id, String nome, StatusRobo status, boolean imagem, int altitudeMax) throws DadosInvalidosException{
         super(id, nome, status);
+        if(altitudeMax <= 0){
+            throw new DadosInvalidosException("ERRO - A altitude máxima deve ser maior que zero.");
+        }
         this.altitudeMax = altitudeMax;
         this.imagem = imagem;
     }
@@ -40,6 +44,21 @@ public class Drone extends Robo {
             return 40;
         }
         return -1;
+    }
+
+    //O drone sobrevoa a área e avisa a central pela interface Comunicavel. Se tiver câmera, também manda as imagens do local.
+    @Override
+    public boolean executarMissao(Missao missao){
+        if(!consumirBateria(missao)){
+            return false;
+        }
+        if(this.imagem){
+            enviarMensagem("Drone "+getNome()+" sobrevoou a área "+missao.getArea().getNomeArea()+" e enviou as imagens para a central.");
+        }
+        else{
+            enviarMensagem("Drone "+getNome()+" sobrevoou a área "+missao.getArea().getNomeArea()+" (sem câmera, sem imagens).");
+        }
+        return true;
     }
 
     //O drone voa, então o tipo de terreno não importa.
