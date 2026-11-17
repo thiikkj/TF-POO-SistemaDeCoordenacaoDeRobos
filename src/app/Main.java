@@ -106,6 +106,9 @@ public class Main {
                     case 17:
                         gerarRelatorio();
                         break;
+                    case 20:
+                        calcularBateriaNecessaria();
+                        break;
                     case 18:
                         Persistencia.salvar(central, ARQUIVO_DADOS);
                         System.out.println("Dados salvos em " + ARQUIVO_DADOS + ".");
@@ -172,6 +175,8 @@ public class Main {
         System.out.println(" 17 - Gerar relatório");
         System.out.println(" 18 - Salvar dados");
         System.out.println(" 19 - Carregar dados");
+        System.out.println(" FUNCIONALIDADE INOVADORA");
+        System.out.println(" 20 - Calcular bateria necessária para uma missão");
         System.out.println("  0 - Sair");
         System.out.println("----------------------------------------");
     }
@@ -366,14 +371,9 @@ public class Main {
         String resultado = lerTexto("Resultado da missão: ");
         Robo robo = missao.getRoboResponsavel();
 
-        //A central conclui a missão e o robô gasta a bateria da missão e volta a ficar disponível.
+        //A central conclui a missão, o robô gasta a bateria da missão e volta a ficar disponível, e a missão sai da fila.
+        //Se algo impedir, a central lança MissaoInvalidaException com o motivo.
         central.finalizarMissao(missao, resultado);
-        if (missao.getStatus() != StatusMissao.CONCLUIDA) {
-            throw new MissaoInvalidaException("ERRO - A central não conseguiu finalizar a missão #" + missao.getIdMissao() + ".");
-        }
-
-        //A missão terminou, então sai da fila de pendentes.
-        central.getMissoesPendentes().remove(missao);
         System.out.println("Missão #" + missao.getIdMissao() + " concluída.");
         System.out.println("O robô " + robo.getNome() + " ficou com " + robo.getNivelBateria() + "% de bateria (" + robo.getStatus() + ").");
     }
@@ -454,6 +454,12 @@ public class Main {
         NivelRisco novoRisco = escolherOpcao("Novo nível de risco", NivelRisco.values());
         area.atualizarNivelRisco(novoRisco);
         System.out.println("Nível de risco da área " + area.getNomeArea() + " atualizado para " + novoRisco + ".");
+    }
+
+    //Funcionalidade inovadora: mostra quanto de bateria cada robô gastaria na missão e com quanto ficaria depois.
+    private static void calcularBateriaNecessaria() throws DadosInvalidosException {
+        Missao missao = buscarMissao(lerInteiro("ID da missão: "));
+        central.exibirBateriaNecessaria(missao);
     }
 
     private static void gerarRelatorio() throws PersistenciaException {
