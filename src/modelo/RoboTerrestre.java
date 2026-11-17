@@ -1,13 +1,17 @@
 package modelo;
 
-import java.util.*;
 import enums.StatusRobo;
+import enums.TipoMissao;
 import enums.TipoTerreno;
 
+//Robô que anda pelo chão. Faz localização de pessoas e transporte de suprimentos, mas só no tipo de terreno em que atua.
 public class RoboTerrestre extends Robo {
-    public int velocidadeMax;
-    public TipoTerreno terreno;
-    public double cargaMax;
+
+    private static final long serialVersionUID = 1L;
+
+    private int velocidadeMax;
+    private TipoTerreno terreno;
+    private double cargaMax;
     //getters e setters
     public int getVelocidadeMax(){
         return this.velocidadeMax;
@@ -31,76 +35,26 @@ public class RoboTerrestre extends Robo {
         this.velocidadeMax = velocidadeMax;
         this.terreno = terreno;
         this.cargaMax = cargaMax;
-        super.missoesRealizadas = new ArrayList<Missao>(0);
+    }
+
+    //Custo base do robô terrestre: 40% na localização de pessoas e 50% no transporte de suprimentos. Não faz reconhecimento (-1).
+    @Override
+    protected int custoBase(Missao missao){
+        if(missao.getTipo() == TipoMissao.LOCALIZACAO_PESSOAS){
+            return 40;
+        }
+        else if(missao.getTipo() == TipoMissao.TRANSPORTE_SUPRIMENTOS){
+            return 50;
+        }
+        return -1;
     }
     @Override
-    public boolean executarMissao(Missao missao){
-        int prioridade;
-        if(missao.getPrioridade() ==enums.PrioridadeMissao.ALTA){
-            prioridade = 10;
-        }
-        else if(missao.getPrioridade() == enums.PrioridadeMissao.MEDIA){
-            prioridade = 5;
-        }
-        else{
-            prioridade = 0;
-        }
-        if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
-            super.missoesRealizadas.add(missao);
-            super.nivelBateria -= 40 + prioridade;
-            super.status = StatusRobo.DISPONIVEL;
-            if(super.nivelBateria == 0){
-                setStatus(StatusRobo.SEM_BATERIA);
-            }
-            return true;
-        }
-        else if(missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS && super.nivelBateria>=50 + prioridade){
-            super.missoesRealizadas.add(missao);
-            super.nivelBateria -= 50 + prioridade;
-            super.status = StatusRobo.DISPONIVEL;
-            if(super.nivelBateria == 0){
-                setStatus(StatusRobo.SEM_BATERIA);
-            }
-            return true;
-        }  
-        return false;
-    }
-    @Override 
     public String exibirResumo(){
-        return "Id: "+this.id+"\n"+"Nome: "+this.nome+"\n"+"Bateria: "+this.nivelBateria+"\n"+"Status: "+this.status+"\n"+"Quantidade de Missões: "+this.missoesRealizadas.size()+"\n"+"Velocidade Máxima: "+this.velocidadeMax+"\n"+"Terreno: "+this.terreno+"\n"+"Carga Máxima: "+this.cargaMax;
+        return resumoBase()+"\n"+"Velocidade Máxima: "+this.velocidadeMax+"\n"+"Terreno: "+this.terreno+"\n"+"Carga Máxima: "+this.cargaMax;
     }
-    @Override 
+    //Só entra em áreas do mesmo tipo de terreno em que ele atua.
+    @Override
     public boolean verificarCompatibilidadeArea(AreaOperacao area){
-        if(area.getTipoTerreno() == this.terreno){
-            return true;
-        }
-        return false;
-    }
-    @Override 
-    public boolean checarBateriaMinima(Missao missao){
-        int prioridade;
-        if(missao.getPrioridade() ==enums.PrioridadeMissao.ALTA){
-            prioridade = 10;
-        }
-        else if(missao.getPrioridade() == enums.PrioridadeMissao.MEDIA){
-            prioridade = 5;
-        }
-        else{
-            prioridade = 0;
-        }
-        if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
-            return true;
-        }
-        else if(missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS && super.nivelBateria>=50 + prioridade){
-            return true;
-        }  
-        return false;
-    }
-    @Override 
-    public boolean checarTipoMissao(Missao missao){
-        if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS || missao.getTipo() == enums.TipoMissao.TRANSPORTE_SUPRIMENTOS){
-            return true;
-        }
-        return false;
+        return area.getTipoTerreno() == this.terreno;
     }
 }

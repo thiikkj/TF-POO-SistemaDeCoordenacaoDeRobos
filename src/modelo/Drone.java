@@ -1,12 +1,15 @@
 package modelo;
 
-import java.util.*;
-    
 import enums.StatusRobo;
+import enums.TipoMissao;
 
+//Robô aéreo. Faz reconhecimento e localização de pessoas, e voa sobre qualquer tipo de terreno.
 public class Drone extends Robo {
-    public boolean imagem;
-    public int altitudeMax;
+
+    private static final long serialVersionUID = 1L;
+
+    private boolean imagem;
+    private int altitudeMax;
     //getters e setters
     public boolean getImagem(){
         return this.imagem;
@@ -23,77 +26,29 @@ public class Drone extends Robo {
     //-------------------------------\\
     public Drone(int id, String nome, StatusRobo status, boolean imagem, int altitudeMax){
         super(id, nome, status);
-        super.nivelBateria = 100;
         this.altitudeMax = altitudeMax;
         this.imagem = imagem;
-        this.missoesRealizadas = new ArrayList<Missao>(0);
     }
+
+    //Custo base do drone: 30% no reconhecimento e 40% na localização de pessoas. Não faz transporte (-1).
     @Override
-    public boolean executarMissao(Missao missao){
-        int prioridade;
-        if(missao.getPrioridade() ==enums.PrioridadeMissao.ALTA){
-            prioridade = 10;
+    protected int custoBase(Missao missao){
+        if(missao.getTipo() == TipoMissao.RECONHECIMENTO){
+            return 30;
         }
-        else if(missao.getPrioridade() == enums.PrioridadeMissao.MEDIA){
-            prioridade = 5;
+        else if(missao.getTipo() == TipoMissao.LOCALIZACAO_PESSOAS){
+            return 40;
         }
-        else{
-            prioridade = 0;
-        }
-        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO && super.nivelBateria>=30 + prioridade){
-            super.missoesRealizadas.add(missao);
-            super.nivelBateria -= 30 + prioridade;
-            super.status = StatusRobo.DISPONIVEL;
-            if(super.nivelBateria == 0){
-                setStatus(StatusRobo.SEM_BATERIA);
-            }
-            return true;
-        }
-        else if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
-            super.missoesRealizadas.add(missao);
-            super.nivelBateria -= 40 + prioridade;
-            super.status = StatusRobo.DISPONIVEL;
-            if(super.nivelBateria == 0){
-                setStatus(StatusRobo.SEM_BATERIA);
-            }
-            return true;
-        }
-        return false;
+        return -1;
     }
-    
+
+    //O drone voa, então o tipo de terreno não importa.
     @Override
     public boolean verificarCompatibilidadeArea(AreaOperacao area){
         return true;
     }
     @Override
     public String exibirResumo(){
-        return "Id: "+this.id+"\n"+"Nome: "+this.nome+"\n"+"Bateria: "+this.nivelBateria+"\n"+"Status: "+this.status+"\n"+"Quantidade de Missões: "+this.missoesRealizadas.size()+"\n"+"Imagem: "+this.imagem+"\n"+"Altitude Máxima: "+this.altitudeMax;
-    }
-    @Override
-    public boolean checarBateriaMinima(Missao missao){
-        int prioridade;
-        if(missao.getPrioridade() ==enums.PrioridadeMissao.ALTA){
-            prioridade = 10;
-        }
-        else if(missao.getPrioridade() == enums.PrioridadeMissao.MEDIA){
-            prioridade = 5;
-        }
-        else{
-            prioridade = 0;
-        }
-        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO && super.nivelBateria>=30 + prioridade){
-            return true;
-        }
-        else if(missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS && super.nivelBateria>=40 + prioridade){
-            return true;
-        }
-        return false;
-    }
-    @Override
-    public boolean checarTipoMissao(Missao missao){
-        if(missao.getTipo() == enums.TipoMissao.RECONHECIMENTO || missao.getTipo() == enums.TipoMissao.LOCALIZACAO_PESSOAS){
-            return true;
-        }
-        return false;
+        return resumoBase()+"\n"+"Imagem: "+this.imagem+"\n"+"Altitude Máxima: "+this.altitudeMax;
     }
 }

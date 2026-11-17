@@ -2,9 +2,9 @@ package modelo;
 import java.util.*;
 
 public class QueueMissao {
-    public Queue<Missao> filaMissao;
-    public Queue<Missao> prioridadeAlta;
-    public Queue<Missao> prioridadebaixa;
+    private Queue<Missao> filaMissao;
+    private Queue<Missao> prioridadeAlta;
+    private Queue<Missao> prioridadebaixa;
     //-------------------------------\\
     public Queue<Missao> getFilaMissao(){
         return this.filaMissao;
