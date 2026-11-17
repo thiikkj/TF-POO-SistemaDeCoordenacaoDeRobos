@@ -23,7 +23,17 @@ public abstract class Robo implements Comunicavel, Serializable{
     private StatusRobo status;
     private ArrayList<Missao> missoesRealizadas;
 
-    public Robo(int id, String nome, StatusRobo status){
+    //Construtor - Valida os dados recebidos e se algum dado for inválido, lança DadosInvalidosException.
+    public Robo(int id, String nome, StatusRobo status) throws DadosInvalidosException{
+        if(id <= 0){
+            throw new DadosInvalidosException("ERRO - O ID do robô deve ser maior que zero.");
+        }
+        if(nome == null || nome.trim().isEmpty()){
+            throw new DadosInvalidosException("ERRO - O nome do robô é obrigatório e não pode ser vazio.");
+        }
+        if(status == null){
+            throw new DadosInvalidosException("ERRO - O status do robô é obrigatório e não pode ser nulo.");
+        }
         this.id = id;
         this.nome = nome;
         this.status = status;
